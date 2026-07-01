@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPE & IIE Cybersecurity Games Portal - Naresuan University</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Scanline CRT overlays -->
+  <div class="scanlines"></div>
+  <div class="flicker-overlay"></div>
+
+  <!-- HEADER BAR -->
+  <header class="main-header">
+    <div class="header-brand">
+      <span class="header-logo">🛡️</span>
+      <div>
+        <h1 class="header-title">CYBERSECURITY GAMES PORTAL</h1>
+        <p class="header-subtitle">Naresuan University | Department of Electrical and Computer Engineering</p>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button id="scanline-toggle-btn" class="btn btn-secondary btn-sm">CRT SCREEN: ON</button>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <div class="portal-box">
+      <div class="portal-header">
+        <div class="portal-badge">305331 / 316331 COMPUTER & INFORMATION SECURITY</div>
+        <h2 class="portal-title">SELECT ACTIVE MISSION</h2>
+        <p class="portal-desc">
+          Welcome to the interactive learning games portal for the Joint CPE & IIE Programs. Select a module mission below to start auditing, decoding, or threat modeling.
+        </p>
+      </div>
+
+      <!-- Games Grid -->
+      <div class="games-grid">
+        
+        <!-- CARD 1: CIA TRIAD -->
+        <div class="game-card">
+          <div class="game-card-header">
+            <span class="card-badge bg-cyan">MODULE 01</span>
+            <span class="card-icon">🔒</span>
+          </div>
+          <h3 class="card-title">CIA Triad Simulator</h3>
+          <p class="card-desc">
+            Analyze critical campus incidents, balance design tradeoffs, and protect Confidentiality, Integrity, and Availability targets under tight time limits.
+          </p>
+          <div class="card-footer">
+            <a href="https://panupongsk-cyber.github.io/cia-triad-cybersecurity-game/" class="btn btn-primary btn-block" target="_blank">
+              LAUNCH SIMULATOR ➔
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD 2: CYBERCHEF PUZZLE LAB -->
+        <div class="game-card">
+          <div class="game-card-header">
+            <span class="card-badge bg-green">MODULE 02 / 03</span>
+            <span class="card-icon">🧪</span>
+          </div>
+          <h3 class="card-title">CyberChef Puzzle Lab</h3>
+          <p class="card-desc">
+            Construct modular recipe pipelines to reverse hex encodings, perform bitwise XOR operations, verify SHA-256 integrity hashes, and decrypt AES logs.
+          </p>
+          <div class="card-footer">
+            <a href="https://panupongsk-cyber.github.io/cyberchef-puzzle-lab/" class="btn btn-primary btn-block" target="_blank">
+              LAUNCH PUZZLE LAB ➔
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD 3: STRIDE THREAT MODELER -->
+        <div class="game-card">
+          <div class="game-card-header">
+            <span class="card-badge bg-purple">MODULE 05 / 06</span>
+            <span class="card-icon">🌐</span>
+          </div>
+          <h3 class="card-title">STRIDE Threat Modeler</h3>
+          <p class="card-desc">
+            Audit Data Flow Diagrams (DFD) on campus portals, identify security vulnerabilities using STRIDE taxonomy, and apply appropriate mitigation controls.
+          </p>
+          <div class="card-footer">
+            <a href="https://panupongsk-cyber.github.io/stride-threat-modeler/" class="btn btn-primary btn-block" target="_blank">
+              LAUNCH MODELER ➔
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <footer class="portal-footer">
+        © 2026 Department of Electrical and Computer Engineering, Naresuan University.
+      </footer>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
