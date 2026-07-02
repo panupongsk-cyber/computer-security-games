@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instructor Statistics Dashboard — NU Cybersecurity Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0f1a;
+      --surface: #111827;
+      --border: #1e2d40;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --cyan: #22d3ee;
+      --green: #10b981;
+      --yellow: #fbbf24;
+      --red: #f43f5e;
+      --purple: #a78bfa;
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-sans: 'Outfit', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-sans); min-height: 100vh; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .brand-title { font-family: var(--font-mono); font-size: 1rem; color: var(--cyan); }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.72rem; font-family: var(--font-mono); font-weight: 600; background: rgba(244,63,94,0.1); color: var(--red); border: 1px solid rgba(244,63,94,0.25); margin-left: 10px; }
+    .back-link { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); text-decoration: none; }
+    .back-link:hover { color: var(--cyan); }
+    main { max-width: 1300px; margin: 0 auto; padding: 32px 24px; }
+    .page-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 4px; }
+    .page-sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 28px; line-height: 1.6; }
+
+    #auth-section { text-align: center; padding: 80px 24px; }
+    #auth-section h2 { font-size: 1.3rem; margin-bottom: 10px; }
+    #auth-section p { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; line-height: 1.6; }
+    #auth-denied { display: none; margin-top: 20px; color: var(--red); font-family: var(--font-mono); font-size: 0.9rem; padding: 12px 20px; background: rgba(244,63,94,0.08); border: 1px solid rgba(244,63,94,0.25); border-radius: 6px; }
+    #dashboard-section { display: none; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 28px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
+    .stat-label { font-size: 0.7rem; font-family: var(--font-mono); color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-size: 2rem; font-weight: 800; line-height: 1; }
+
+    .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+    .filter-btn { background: var(--surface); border: 1px solid var(--border); color: var(--muted); padding: 6px 14px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.78rem; cursor: pointer; transition: all 0.15s; }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--cyan); color: var(--cyan); background: rgba(34,211,238,0.08); }
+    .search-box { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 6px 14px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.78rem; width: 220px; }
+    .search-box::placeholder { color: var(--muted); }
+    .search-box:focus { outline: none; border-color: var(--cyan); }
+    .btn-export { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 6px 14px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.78rem; cursor: pointer; transition: all 0.15s; margin-left: auto; }
+    .btn-export:hover { border-color: var(--green); color: var(--green); }
+
+    .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    thead th { background: rgba(34,211,238,0.04); border-bottom: 1px solid var(--border); padding: 10px 14px; text-align: left; font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.025); }
+    tbody td { padding: 10px 14px; vertical-align: middle; }
+    .game-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-family: var(--font-mono); font-weight: 600; white-space: nowrap; }
+    .game-cia    { background: rgba(34,211,238,0.1); color: var(--cyan); }
+    .game-crypto { background: rgba(16,185,129,0.1); color: var(--green); }
+    .game-stride { background: rgba(167,139,250,0.1); color: var(--purple); }
+    .score-val { font-family: var(--font-mono); font-weight: 700; color: var(--green); }
+    .mono-muted { font-family: var(--font-mono); color: var(--muted); font-size: 0.78rem; }
+    .breakdown-val { font-family: var(--font-mono); font-size: 0.74rem; color: var(--muted); max-width: 220px; line-height: 1.5; }
+    #status-row td, #empty-row td { text-align: center; color: var(--muted); padding: 40px; font-family: var(--font-mono); font-size: 0.85rem; }
+    .spinner { display: inline-block; border: 2px solid var(--border); border-top-color: var(--cyan); border-radius: 50%; width: 16px; height: 16px; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <span class="brand-title">INSTRUCTOR_STATS_DASHBOARD</span>
+    <span class="badge">RESTRICTED ACCESS</span>
+  </div>
+  <a href="index.html" class="back-link">← BACK TO PORTAL</a>
+</header>
+
+<main>
+
+  <div id="auth-section">
+    <h2>INSTRUCTOR SIGN-IN REQUIRED</h2>
+    <p>This dashboard is restricted to <strong style="color:var(--cyan);">panupongs@nu.ac.th</strong> only.<br>Sign in with your Naresuan University Google account to continue.</p>
+    <div id="google-signin-btn" style="display:flex; justify-content:center;"></div>
+    <div id="auth-denied">ACCESS DENIED — This dashboard is restricted to panupongs@nu.ac.th</div>
+  </div>
+
+  <div id="dashboard-section">
+    <h1 class="page-title">LEARNER STATISTICS DASHBOARD</h1>
+    <p class="page-sub">305331 / 316331 Computer &amp; Information Security &nbsp;|&nbsp; Signed in as <span id="instructor-email" style="color:var(--cyan);"></span></p>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">TOTAL SESSIONS</div>
+        <div class="stat-value" id="stat-total" style="color:var(--cyan);">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">UNIQUE STUDENTS</div>
+        <div class="stat-value" id="stat-students" style="color:var(--green);">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">CIA TRIAD PLAYS</div>
+        <div class="stat-value" id="stat-cia" style="color:var(--cyan);">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">CRYPTO LAB PLAYS</div>
+        <div class="stat-value" id="stat-crypto" style="color:var(--green);">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">STRIDE PLAYS</div>
+        <div class="stat-value" id="stat-stride" style="color:var(--purple);">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">AVG SCORE</div>
+        <div class="stat-value" id="stat-avg" style="color:var(--yellow);">—</div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">ALL GAMES</button>
+      <button class="filter-btn" data-filter="cia-triad">CIA TRIAD</button>
+      <button class="filter-btn" data-filter="cyberchef-puzzle-lab">CRYPTO LAB</button>
+      <button class="filter-btn" data-filter="stride-threat-modeler">STRIDE</button>
+      <input class="search-box" id="search-box" type="text" placeholder="Search name / ID / email...">
+      <button class="btn-export" id="export-csv-btn">EXPORT CSV</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>NAME</th>
+            <th>STUDENT ID</th>
+            <th>EMAIL</th>
+            <th>GAME</th>
+            <th>SCORE</th>
+            <th>TIME</th>
+            <th>BREAKDOWN</th>
+            <th>COMPLETED AT</th>
+          </tr>
+        </thead>
+        <tbody id="results-tbody">
+          <tr id="status-row"><td colspan="9">Waiting for sign-in...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+const INSTRUCTOR_EMAIL = "panupongs@nu.ac.th";
+const OAUTH_CLIENT_ID = "69112486306-t7mofej13egi7ape3t2cgs5l19tg6sp7.apps.googleusercontent.com";
+
+firebase.initializeApp({
+  apiKey: "AIzaSyBjpwTbjBnKbD5KKxXmw5eRAx5IOoWI9nY",
+  authDomain: "nu-cybersec-games.firebaseapp.com",
+  projectId: "nu-cybersec-games",
+  storageBucket: "nu-cybersec-games.firebasestorage.app",
+  messagingSenderId: "771818733994",
+  appId: "1:771818733994:web:152ea862686c76aa912bd3"
+});
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+let allResults = [];
+let activeFilter = "all";
+let searchQuery = "";
+
+window.handleGoogleCredentialResponse = async (response) => {
+  const payload = JSON.parse(atob(response.credential.split(".")[1]));
+  const email = (payload.email || "").toLowerCase();
+
+  if (email !== INSTRUCTOR_EMAIL) {
+    document.getElementById("auth-denied").style.display = "block";
+    return;
+  }
+
+  const credential = firebase.auth.GoogleAuthProvider.credential(response.credential);
+  await auth.signInWithCredential(credential);
+
+  document.getElementById("auth-section").style.display = "none";
+  document.getElementById("dashboard-section").style.display = "block";
+  document.getElementById("instructor-email").textContent = email;
+
+  loadStats();
+};
+
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    if (window.google && window.google.accounts) {
+      window.google.accounts.id.initialize({
+        client_id: OAUTH_CLIENT_ID,
+        callback: window.handleGoogleCredentialResponse
+      });
+      window.google.accounts.id.renderButton(
+        document.getElementById("google-signin-btn"),
+        { theme: "outline", size: "large", width: 280 }
+      );
+    }
+  }, 800);
+});
+
+async function loadStats() {
+  document.getElementById("results-tbody").innerHTML =
+    `<tr id="status-row"><td colspan="9"><span class="spinner"></span>Loading from Firestore...</td></tr>`;
+  try {
+    const snap = await db.collection("gameResults").orderBy("completedAt", "desc").limit(1000).get();
+    allResults = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateCards();
+    renderTable();
+  } catch (e) {
+    document.getElementById("results-tbody").innerHTML =
+      `<tr><td colspan="9" style="text-align:center;color:var(--red);padding:40px;font-family:monospace;">Error: ${e.message}</td></tr>`;
+  }
+}
+
+function updateCards() {
+  const total = allResults.length;
+  const students = new Set(allResults.map(r => r.email)).size;
+  const cia    = allResults.filter(r => r.gameId === "cia-triad").length;
+  const crypto = allResults.filter(r => r.gameId === "cyberchef-puzzle-lab").length;
+  const stride = allResults.filter(r => r.gameId === "stride-threat-modeler").length;
+  const avg = total ? Math.round(allResults.reduce((s, r) => s + (r.score || 0), 0) / total) : 0;
+  document.getElementById("stat-total").textContent   = total;
+  document.getElementById("stat-students").textContent = students;
+  document.getElementById("stat-cia").textContent     = cia;
+  document.getElementById("stat-crypto").textContent  = crypto;
+  document.getElementById("stat-stride").textContent  = stride;
+  document.getElementById("stat-avg").textContent     = avg;
+}
+
+function filtered() {
+  return allResults.filter(r => {
+    const matchGame = activeFilter === "all" || r.gameId === activeFilter;
+    const q = searchQuery.toLowerCase();
+    const matchQ = !q ||
+      (r.playerName  || "").toLowerCase().includes(q) ||
+      (r.studentId   || "").toLowerCase().includes(q) ||
+      (r.email       || "").toLowerCase().includes(q);
+    return matchGame && matchQ;
+  });
+}
+
+function fmtTime(s) {
+  if (s == null) return "—";
+  return `${Math.floor(s/60).toString().padStart(2,"0")}:${(s%60).toString().padStart(2,"0")}`;
+}
+
+function fmtDate(ts) {
+  if (!ts) return "—";
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" });
+}
+
+function fmtBreakdown(r) {
+  const bd = r.breakdown;
+  if (!bd) return r.levelsCompleted != null ? `Levels: ${r.levelsCompleted}` : "—";
+  if (r.gameId === "cia-triad")
+    return `C ${bd.C?.correct||0}/${bd.C?.total||3} · I ${bd.I?.correct||0}/${bd.I?.total||3} · A ${bd.A?.correct||0}/${bd.A?.total||3}`;
+  if (r.gameId === "stride-threat-modeler") {
+    const keys = ["S","T","R","I","D","E"];
+    return keys.map(k => `${k}:${bd[k]?.correct||0}/${bd[k]?.total||0}`).join(" ");
+  }
+  return r.levelsCompleted != null ? `Levels: ${r.levelsCompleted}` : "—";
+}
+
+function gameBadge(id) {
+  if (id === "cia-triad")            return `<span class="game-badge game-cia">CIA TRIAD</span>`;
+  if (id === "cyberchef-puzzle-lab") return `<span class="game-badge game-crypto">CRYPTO LAB</span>`;
+  if (id === "stride-threat-modeler")return `<span class="game-badge game-stride">STRIDE</span>`;
+  return id || "—";
+}
+
+function renderTable() {
+  const tbody = document.getElementById("results-tbody");
+  const rows = filtered();
+  if (!rows.length) {
+    tbody.innerHTML = `<tr id="empty-row"><td colspan="9">No results found.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map((r, i) => `
+    <tr>
+      <td class="mono-muted">${i + 1}</td>
+      <td>${r.playerName || "—"}</td>
+      <td class="mono-muted" style="color:var(--cyan);">${r.studentId || "—"}</td>
+      <td class="mono-muted">${r.email || "—"}</td>
+      <td>${gameBadge(r.gameId)}</td>
+      <td class="score-val">${String(r.score || 0).padStart(4, "0")}</td>
+      <td class="mono-muted">${fmtTime(r.timeTakenSeconds)}</td>
+      <td class="breakdown-val">${fmtBreakdown(r)}</td>
+      <td class="mono-muted">${fmtDate(r.completedAt)}</td>
+    </tr>
+  `).join("");
+}
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeFilter = btn.dataset.filter;
+    renderTable();
+  });
+});
+
+document.getElementById("search-box").addEventListener("input", e => {
+  searchQuery = e.target.value;
+  renderTable();
+});
+
+document.getElementById("export-csv-btn").addEventListener("click", () => {
+  const rows = filtered();
+  const hdr = ["#","Name","StudentID","Email","Game","Score","TimeSec","Breakdown","CompletedAt"];
+  const lines = [hdr.join(","), ...rows.map((r, i) => {
+    const dt = r.completedAt ? (r.completedAt.toDate ? r.completedAt.toDate().toISOString() : r.completedAt) : "";
+    return [i+1, r.playerName||"", r.studentId||"", r.email||"", r.gameId||"", r.score||0, r.timeTakenSeconds||0, `"${fmtBreakdown(r)}"`, dt].join(",");
+  })];
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/csv" }));
+  a.download = `game-stats-${new Date().toISOString().split("T")[0]}.csv`;
+  a.click();
+});
+</script>
+</body>
+</html>
