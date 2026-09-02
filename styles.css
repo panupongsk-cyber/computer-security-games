@@ -9,6 +9,7 @@
   --color-accent-dim: #0284c7;
   --color-green: #4ade80;        /* terminal green */
   --color-purple: #c084fc;      /* modules purple */
+  --color-amber: #f5a524;       /* access-control amber */
   
   --font-sans: 'Outfit', -apple-system, sans-serif;
   --font-mono: 'Share Tech Mono', monospace;
@@ -291,6 +292,11 @@ body {
 .bg-purple {
   background-color: rgba(192, 132, 252, 0.1);
   color: var(--color-purple);
+}
+
+.bg-amber {
+  background-color: rgba(245, 165, 36, 0.1);
+  color: var(--color-amber);
 }
 
 .card-icon {
