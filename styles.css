@@ -10,6 +10,7 @@
   --color-green: #4ade80;        /* terminal green */
   --color-purple: #c084fc;      /* modules purple */
   --color-amber: #f5a524;       /* access-control amber */
+  --color-red: #f87171;         /* session/credential red */
   
   --font-sans: 'Outfit', -apple-system, sans-serif;
   --font-mono: 'Share Tech Mono', monospace;
@@ -297,6 +298,11 @@ body {
 .bg-amber {
   background-color: rgba(245, 165, 36, 0.1);
   color: var(--color-amber);
+}
+
+.bg-red {
+  background-color: rgba(248, 113, 113, 0.1);
+  color: var(--color-red);
 }
 
 .card-icon {
