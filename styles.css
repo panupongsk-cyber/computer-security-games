@@ -11,6 +11,7 @@
   --color-purple: #c084fc;      /* modules purple */
   --color-amber: #f5a524;       /* access-control amber */
   --color-red: #f87171;         /* session/credential red */
+  --color-blue: #60a5fa;        /* web-risk blue */
   
   --font-sans: 'Outfit', -apple-system, sans-serif;
   --font-mono: 'Share Tech Mono', monospace;
@@ -303,6 +304,11 @@ body {
 .bg-red {
   background-color: rgba(248, 113, 113, 0.1);
   color: var(--color-red);
+}
+
+.bg-blue {
+  background-color: rgba(96, 165, 250, 0.1);
+  color: var(--color-blue);
 }
 
 .card-icon {
